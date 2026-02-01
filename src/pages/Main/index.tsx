@@ -1,11 +1,12 @@
 import { useState, useCallback, useRef } from 'react';
 import styled from '@emotion/styled';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RefreshCcw } from 'lucide-react';
+import { Sparkles, RefreshCcw, History } from 'lucide-react';
 import { LottoBall } from '../../components/LottoBall';
 import { AIStatus } from '../../components/AIStatus';
 import { LottoMachine } from '../../components/LottoMachine';
 import { predictNumbers } from '../../ml/inference';
+import { useNavigate } from 'react-router-dom';
 
 const ContentCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.03);
@@ -164,6 +165,12 @@ const ResetButton = styled.button`
   border-radius: 50px;
   transition: all 0.2s;
   backdrop-filter: blur(10px);
+  white-space: nowrap;
+  justify-content: center;
+
+  svg {
+    flex-shrink: 0;
+  }
   
   &:hover {
     color: #ffffff;
@@ -175,12 +182,52 @@ const ResetButton = styled.button`
   @media (max-width: 768px) {
     padding: 0.65rem 1.25rem;
     font-size: 0.9rem;
+    flex: 1;
+    min-width: 0;
+  }
+`;
+
+const HistoryButton = styled.button`
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  justify-content: center;
+
+  svg {
+    flex-shrink: 0;
+  }
+  
+  &:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+    flex: 1;
     min-width: 0;
   }
 `;
 
 
+
+
 export const Main = () => {
+  const navigate = useNavigate()
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [extractedNumbers, setExtractedNumbers] = useState<number[]>([]);
   const [currentExtraction, setCurrentExtraction] = useState<number | null>(null);
@@ -334,6 +381,10 @@ export const Main = () => {
                         <RefreshCcw size={16} />
                         다시 생성하기
                       </ResetButton>
+                      <HistoryButton onClick={() => navigate('/history')}>
+                        <History size={16} />
+                        추첨기록 보기
+                      </HistoryButton>
                     </ButtonContainer>
                   )}
                 </>
