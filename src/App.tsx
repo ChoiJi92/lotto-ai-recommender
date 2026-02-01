@@ -6,7 +6,7 @@ import { History } from './pages/History';
 
 const MainContainer = styled.main`
   min-height: 100vh;
-  padding: 8rem 2rem 4rem;
+  padding: 6rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,7 +14,8 @@ const MainContainer = styled.main`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    padding: 6rem 1rem 2rem;
+    padding: 4.5rem 1rem 1rem;
+    justify-content: flex-start; 
   }
 `;
 

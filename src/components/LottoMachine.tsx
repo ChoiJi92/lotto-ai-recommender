@@ -16,9 +16,9 @@ const MachineContainer = styled.div`
   @media (max-width: 768px) {
     width: 300px;
     height: 350px;
-    transform: scale(0.75);
+    transform: scale(0.6); 
     transform-origin: top center;
-    margin-bottom: -80px; /* Compress negative space from scaling */
+    margin-bottom: -130px; 
   }
 `;
 
