@@ -27,7 +27,6 @@ const StatusText = styled(motion.p)`
   font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 1px;
-  text-transform: uppercase;
 `;
 
 export const AIStatus = () => {
@@ -55,7 +54,7 @@ export const AIStatus = () => {
         animate={{ opacity: [0.4, 1, 0.4] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        AI Analyzing probabilistic patterns...
+        AI가 당첨 패턴을 분석 중입니다...
       </StatusText>
     </StatusContainer>
   );
