@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, History as HistoryIcon } from 'lucide-react';
+import { Trash2, History as HistoryIcon, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { LottoBall } from '../../components/LottoBall';
 
 const HistoryContainer = styled.div`
@@ -12,6 +13,36 @@ const HistoryContainer = styled.div`
 
   @media (max-width: 768px) {
     padding: 1rem 1rem 6rem;
+  }
+`;
+
+const BackButton = styled.button`
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  margin-bottom: 1.5rem;
+  
+  &:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
   }
 `;
 
@@ -173,6 +204,7 @@ interface HistoryItem {
 }
 
 export const History = () => {
+  const navigate = useNavigate();
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
@@ -198,6 +230,10 @@ export const History = () => {
 
   return (
     <HistoryContainer>
+      <BackButton onClick={() => navigate('/')}>
+        <ArrowLeft size={16} />
+        AI 추첨
+      </BackButton>
       <Header>
         <Title>
           <HistoryIcon size={28} color="#00f7ff" />
