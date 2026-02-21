@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, History as HistoryIcon, ArrowLeft, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { LottoBall } from '../../components/LottoBall';
+import { AIReportCard } from '../../components/AIReportCard';
+import type { AIReportData } from '../../components/AIReportCard';
 
 const HistoryContainer = styled.div`
   max-width: 800px;
@@ -135,7 +137,6 @@ const HistoryCard = styled(motion.div)`
     align-items: flex-start;
     gap: 1.2rem;
     padding: 1.5rem 1.2rem;
-    padding-right: 4rem; /* Make room for absolute buttons */
   }
 `;
 
@@ -148,6 +149,7 @@ const DateText = styled.div`
     font-size: 0.85rem;
     width: 100%;
     padding-bottom: 0.5rem;
+    padding-right: 5rem; /* Only push the date text to prevent overlap with top-right buttons */
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 `;
@@ -239,6 +241,7 @@ interface HistoryItem {
   id: string;
   date: string;
   numbers: number[];
+  predictionData?: AIReportData;
 }
 
 export const History = () => {
@@ -336,6 +339,12 @@ export const History = () => {
                   <Trash2 size={18} />
                 </DeleteItemButton>
               </CardActions>
+              
+              {item.predictionData && (
+                <div style={{ width: '100%', marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+                  <AIReportCard data={item.predictionData} />
+                </div>
+              )}
             </HistoryCard>
           ))}
         </AnimatePresence>
