@@ -568,26 +568,41 @@ export const Main = () => {
   const handleSaveImage = async (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     if (!captureAreaRef.current) return;
+    
+    // Add a loading state if needed
     try {
-      // Capture only the results area, excluding buttons
+      // Small delay to ensure all animations are settled
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const canvas = await html2canvas(captureAreaRef.current, { 
         backgroundColor: getComputedStyle(document.body).backgroundColor || '#0a0a0a',
         scale: 2,
         useCORS: true,
-        allowTaint: true,
-        scrollX: 0,
-        scrollY: -window.scrollY, // Fix offset if page is scrolled
+        allowTaint: false, // Set to false for security/CORS
+        logging: false,
       });
-      const image = canvas.toDataURL('image/png');
+
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('Failed to create blob');
+
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = image;
+      link.href = url;
       link.download = `lotto-ai-report-${new Date().getTime()}.png`;
+      
+      // For mobile Safari and some others, link.click() might need to be in the DOM
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
     } catch (err) {
       console.error('Failed to save image:', err);
-      alert('이미지 저장에 실패했습니다.');
+      alert('이미지 저장에 실패했습니다. 공유하기 기능을 이용해 주세요.');
     }
   };
 
