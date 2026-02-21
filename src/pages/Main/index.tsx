@@ -8,6 +8,9 @@ import { AIStatus } from '../../components/AIStatus';
 import { LottoMachine } from '../../components/LottoMachine';
 import { predictNumbers } from '../../ml/inference';
 import { useNavigate } from 'react-router-dom';
+import { AIReportCard } from '../../components/AIReportCard';
+import type { AIReportData } from '../../components/AIReportCard';
+
 
 const ContentCard = styled(motion.div)`
   background: var(--card-bg);
@@ -27,8 +30,11 @@ const ContentCard = styled(motion.div)`
   @media (max-width: 768px) {
     padding: 1rem 0.5rem;
     border-radius: 20px;
-    height: auto;
-    max-height: 85vh; /* Limit height to viewport */
+    height: 100%;
+    max-height: 90vh; /* Allow a bit more area */
+    overflow-y: auto; /* Enable scrolling if content is too long on mobile */
+    overscroll-behavior: contain;
+    justify-content: flex-start; /* Stop centering when scrolling is active */
   }
 `;
 
@@ -76,8 +82,10 @@ const VisualContainer = styled.div`
   width: 100%;
 
   @media (max-width: 768px) {
-    transform: scale(0.85); 
-    margin: -1rem 0 -2rem; 
+    transform: scale(0.8);
+    transform-origin: top center;
+    margin-top: -0.5rem;
+    margin-bottom: -4rem; /* Compensate for the scale to close the gap */
   }
 `;
 
@@ -232,6 +240,8 @@ export const Main = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [extractedNumbers, setExtractedNumbers] = useState<number[]>([]);
   const [currentExtraction, setCurrentExtraction] = useState<number | null>(null);
+  const [predictionData, setPredictionData] = useState<AIReportData | null>(null);
+  const predictionDataRef = useRef<AIReportData | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const captureRef = useRef<HTMLDivElement>(null);
 
@@ -274,6 +284,7 @@ export const Main = () => {
     setIsAnalyzing(true);
     setExtractedNumbers([]);
     setCurrentExtraction(null);
+    setPredictionData(null);
 
     if (intervalRef.current) clearInterval(intervalRef.current);
 
@@ -283,6 +294,7 @@ export const Main = () => {
     try {
       const result = await predictNumbers();
       finalNumbers = result.numbers;
+      predictionDataRef.current = result;
     } catch (error) {
       console.warn('ML inference failed, falling back to random:', error);
       finalNumbers = [];
@@ -293,6 +305,7 @@ export const Main = () => {
         }
       }
       finalNumbers.sort((a, b) => a - b);
+      predictionDataRef.current = { numbers: finalNumbers };
     }
 
     // Ensure minimum 2-second display of AIStatus animation
@@ -321,6 +334,11 @@ export const Main = () => {
 
         const sortedNumbers = [...finalNumbers].sort((a, b) => a - b);
         setExtractedNumbers(sortedNumbers);
+        
+        if (predictionDataRef.current) {
+          predictionDataRef.current.numbers = sortedNumbers;
+        }
+        setPredictionData(predictionDataRef.current);
 
         const historyItem = {
           id: Date.now().toString(),
@@ -433,6 +451,9 @@ export const Main = () => {
                         추첨기록
                       </HistoryButton>
                     </ButtonContainer>
+                  )}
+                  {extractedNumbers.length > 0 && predictionData && (
+                    <AIReportCard data={predictionData} />
                   )}
                 </>
               )}
