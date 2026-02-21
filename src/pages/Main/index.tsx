@@ -252,7 +252,8 @@ export const Main = () => {
     }
   };
 
-  const handleSaveImage = async () => {
+  const handleSaveImage = async (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (!captureRef.current) return;
     try {
       const canvas = await html2canvas(captureRef.current, { backgroundColor: null, scale: 2 });
