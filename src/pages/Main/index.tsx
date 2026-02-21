@@ -354,6 +354,67 @@ const DreamInput = styled.textarea`
 
 
 
+const GuideSection = styled.div`
+  width: 100%;
+  max-width: 800px;
+  margin-top: 5rem;
+  padding: 3rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 32px;
+  text-align: left;
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin-top: 3rem;
+    border-radius: 24px;
+  }
+`;
+
+const GuideTitle = styled.h2`
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--accent-gradient);
+    border-radius: 2px;
+  }
+`;
+
+const GuideGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+`;
+
+const GuideItem = styled.div`
+  h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    color: var(--text-main);
+  }
+  p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+`;
+
 const ModalOverlay = styled(motion.div)`
   position: fixed;
   top: 0;
@@ -834,6 +895,39 @@ export const Main = () => {
           </ModalOverlay>
         )}
       </AnimatePresence>
+      <GuideSection>
+        <GuideTitle>AI 행운번호 예측 가이드</GuideTitle>
+        <GuideGrid>
+          <GuideItem>
+            <h4>🤖 앙상블 인공지능 모델</h4>
+            <p>
+              본 시스템은 Random Forest와 XGBoost 알고리즘을 결합한 앙상블 학습 모델을 사용합니다. 
+              과거 20년간의 당첨 데이터를 학습하여 단순 랜덤보다 정교한 확률 분포를 계산합니다.
+            </p>
+          </GuideItem>
+          <GuideItem>
+            <h4>⚖️ 3가지 맞춤형 전략</h4>
+            <p>
+              유저의 성향에 따라 안정형, 밸런스, 도전형 전략을 선택할 수 있습니다. 
+              각 전략은 분석 모델의 가중치를 다르게 적용하여 최적의 조합을 찾아냅니다.
+            </p>
+          </GuideItem>
+          <GuideItem>
+            <h4>💭 꿈 분석 엔진</h4>
+            <p>
+              자연어 처리 기반의 꿈 키워드 분석 기능을 통해 유저의 무의식적 영감을 수치화합니다. 
+              꿈속의 상징들을 행운의 숫자로 변환하여 분석 결과에 즉시 반영합니다.
+            </p>
+          </GuideItem>
+          <GuideItem>
+            <h4>📊 실시간 통계 반영</h4>
+            <p>
+              매주 업데이트되는 최신 회차 데이터를 바탕으로 Hot(빈출), Cold(미출현) 번호를 
+              실시간 분석하여 가장 시의적절한 추천 번호를 제공합니다.
+            </p>
+          </GuideItem>
+        </GuideGrid>
+      </GuideSection>
     </ContentCard>
   );
 };
