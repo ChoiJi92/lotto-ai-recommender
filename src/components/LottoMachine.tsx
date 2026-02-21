@@ -190,7 +190,7 @@ export const LottoMachine = ({ isSpinning }: LottoMachineProps) => {
   }, []);
 
   return (
-    <MachineContainer>
+    <MachineContainer aria-hidden="true">
       <DrumWrapper>
         <DrumFrame />
         <Drum
