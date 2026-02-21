@@ -266,13 +266,14 @@ export const History = () => {
     }
   };
 
-  const shareItem = async (item: HistoryItem) => {
+  const shareItem = async (e: React.MouseEvent, item: HistoryItem) => {
+    e.preventDefault();
     try {
       if (navigator.share) {
         await navigator.share({
           title: '내 행운의 로또 번호',
           text: `AI가 추천해준 행운의 로또 번호는 ${item.numbers.join(', ')} 입니다! 당신도 추천받아보세요 :)`,
-          url: window.location.href.replace('/history', ''),
+          url: 'https://verolabo.com',
         });
       } else {
         alert('공유하기 기능을 지원하지 않는 브라우저입니다. URL을 복사해주세요.');
@@ -328,10 +329,10 @@ export const History = () => {
                 ))}
               </BallsRow>
               <CardActions>
-                <ShareItemButton onClick={() => shareItem(item)}>
+                <ShareItemButton type="button" onClick={(e) => shareItem(e, item)}>
                   <Share2 size={18} />
                 </ShareItemButton>
-                <DeleteItemButton onClick={() => deleteItem(item.id)}>
+                <DeleteItemButton type="button" onClick={() => deleteItem(item.id)}>
                   <Trash2 size={18} />
                 </DeleteItemButton>
               </CardActions>

@@ -55,15 +55,15 @@ export const LottoBall = ({ number, delay = 0 }: LottoBallProps) => {
   return (
     <BallContainer
       colorIndex={getColorIndex(number)}
-      initial={{ scale: 0, y: 50, opacity: 0 }}
-      animate={{ scale: 1, y: 0, opacity: 1 }}
+      initial={{ scale: 0, y: 50, opacity: 0, rotate: 0 }}
+      animate={{ scale: 1, y: 0, opacity: 1, rotate: 0 }}
       transition={{ 
         type: 'spring', 
         stiffness: 260, 
         damping: 20,
         delay 
       }}
-      whileHover={{ scale: 1.1, rotate: 10 }}
+      whileHover={{ scale: 1.05 }}
     >
       {number}
     </BallContainer>

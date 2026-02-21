@@ -235,13 +235,14 @@ export const Main = () => {
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const captureRef = useRef<HTMLDivElement>(null);
 
-  const handleShare = async () => {
+  const handleShare = async (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     try {
       if (navigator.share) {
         await navigator.share({
           title: '내 행운의 로또 번호',
           text: `AI가 추천해준 행운의 로또 번호는 ${extractedNumbers.join(', ')} 입니다! 당신도 추천받아보세요 :)`,
-          url: window.location.href, // Or your actual domain
+          url: 'https://verolabo.com',
         });
       } else {
         alert('공유하기 기능을 지원하지 않는 브라우저입니다. URL을 복사해주세요.');
@@ -251,7 +252,8 @@ export const Main = () => {
     }
   };
 
-  const handleSaveImage = async () => {
+  const handleSaveImage = async (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (!captureRef.current) return;
     try {
       const canvas = await html2canvas(captureRef.current, { backgroundColor: null, scale: 2 });
@@ -414,19 +416,19 @@ export const Main = () => {
                     </ActionButton>
                   ) : (
                     <ButtonContainer>
-                      <ResetButton onClick={handleSaveImage}>
+                      <ResetButton type="button" onClick={handleSaveImage}>
                         <Download size={16} />
                         이미지 저장
                       </ResetButton>
-                      <ResetButton onClick={handleShare}>
+                      <ResetButton type="button" onClick={handleShare}>
                         <Share2 size={16} />
                         공유하기
                       </ResetButton>
-                      <ResetButton onClick={generateNumbers}>
+                      <ResetButton type="button" onClick={generateNumbers}>
                         <RefreshCcw size={16} />
                         다시 생성
                       </ResetButton>
-                      <HistoryButton onClick={() => navigate('/history')}>
+                      <HistoryButton type="button" onClick={() => navigate('/history')}>
                         <History size={16} />
                         추첨기록
                       </HistoryButton>
