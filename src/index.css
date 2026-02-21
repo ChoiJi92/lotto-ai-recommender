@@ -1,18 +1,57 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 
 :root {
-  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: dark;
-  color: #ffffff;
-  background-color: #0a0a1a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Default Light Mode */
+  color-scheme: light;
+  --bg-top: #ffffff;
+  --bg-bottom: #f8f9fa;
+  --text-main: #111111;
+  --text-muted: #666666;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+  --glow-color: rgba(49, 130, 246, 0.06);
+  --btn-bg: #ffffff;
+  --btn-border: #e2e8f0;
+  --btn-text: #334155;
+  --btn-hover-bg: #f8fafc;
+  --btn-hover-border: #cbd5e1;
+  --menu-bg: rgba(255, 255, 255, 0.95);
+  --title-gradient: linear-gradient(135deg, #111111, #475569);
+  --accent-gradient: linear-gradient(135deg, #3182f6, #7a22c9);
+  --primary-btn: #111111;
+  --primary-btn-text: #ffffff;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-top: #0a0a0a;
+  --bg-bottom: #000000;
+  --text-main: #ededed;
+  --text-muted: #888888;
+  --card-bg: rgba(20, 20, 20, 0.6);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  --glow-color: rgba(49, 130, 246, 0.1);
+  --btn-bg: rgba(255, 255, 255, 0.05);
+  --btn-border: rgba(255, 255, 255, 0.1);
+  --btn-text: #ededed;
+  --btn-hover-bg: rgba(255, 255, 255, 0.1);
+  --btn-hover-border: rgba(255, 255, 255, 0.2);
+  --menu-bg: rgba(0, 0, 0, 0.95);
+  --title-gradient: linear-gradient(135deg, #ffffff, #a3a3a3);
+  --accent-gradient: linear-gradient(135deg, #a78bfa, #818cf8);
+  --primary-btn: #ededed;
+  --primary-btn-text: #000000;
 }
 
 body {
@@ -22,7 +61,9 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
-  background: radial-gradient(circle at 50% 50%, #1a1a3a 0%, #0a0a1a 100%);
+  color: var(--text-main);
+  background: radial-gradient(circle at 50% 50%, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 #root {

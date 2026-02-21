@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, History as HistoryIcon, ArrowLeft } from 'lucide-react';
+import { Trash2, History as HistoryIcon, ArrowLeft, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { LottoBall } from '../../components/LottoBall';
 
@@ -17,9 +17,9 @@ const HistoryContainer = styled.div`
 `;
 
 const BackButton = styled.button`
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--btn-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -33,9 +33,9 @@ const BackButton = styled.button`
   margin-bottom: 1.5rem;
   
   &:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--text-main);
+    background: var(--btn-hover-bg);
+    border-color: var(--btn-hover-border);
     transform: translateY(-1px);
   }
 
@@ -51,7 +51,7 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2rem;
-  color: #fff;
+  color: var(--text-main);
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -102,10 +102,10 @@ const ClearButton = styled.button`
 const EmptyState = styled.div`
   text-align: center;
   padding: 4rem 2rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--card-bg);
   border-radius: 24px;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.4);
+  border: 1px dashed var(--card-border);
+  color: var(--text-muted);
   font-size: 1.1rem;
   display: flex;
   flex-direction: column;
@@ -119,9 +119,9 @@ const EmptyState = styled.div`
 `;
 
 const HistoryCard = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--card-bg);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--card-border);
   border-radius: 24px;
   padding: 1.5rem;
   margin-bottom: 1rem;
@@ -135,11 +135,12 @@ const HistoryCard = styled(motion.div)`
     align-items: flex-start;
     gap: 1.2rem;
     padding: 1.5rem 1.2rem;
+    padding-right: 4rem; /* Make room for absolute buttons */
   }
 `;
 
 const DateText = styled.div`
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   font-size: 0.9rem;
   font-family: monospace;
 
@@ -184,7 +185,7 @@ const DeleteItemButton = styled.button`
 
   &:hover {
     color: #ff3b30;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--btn-hover-bg);
   }
 
   @media (max-width: 768px) {
@@ -194,6 +195,43 @@ const DeleteItemButton = styled.button`
     background: rgba(255, 59, 48, 0.1);
     color: #ff3b30;
     padding: 0.4rem;
+  }
+`;
+
+const ShareItemButton = styled.button`
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: #3182f6;
+    background: var(--btn-hover-bg);
+  }
+
+  @media (max-width: 768px) {
+    position: absolute;
+    top: 1rem;
+    right: 3.5rem;
+    background: var(--btn-bg);
+    color: var(--text-main);
+    padding: 0.4rem;
+    border: 1px solid var(--btn-border);
+  }
+`;
+
+const CardActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  
+  @media (max-width: 768px) {
+    display: contents; /* Actions are position:absolute on mobile */
   }
 `;
 
@@ -228,6 +266,22 @@ export const History = () => {
     }
   };
 
+  const shareItem = async (item: HistoryItem) => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: '내 행운의 로또 번호',
+          text: `AI가 추천해준 행운의 로또 번호는 ${item.numbers.join(', ')} 입니다! 당신도 추천받아보세요 :)`,
+          url: window.location.href.replace('/history', ''),
+        });
+      } else {
+        alert('공유하기 기능을 지원하지 않는 브라우저입니다. URL을 복사해주세요.');
+      }
+    } catch (err) {
+      console.log('Error sharing:', err);
+    }
+  };
+
   return (
     <HistoryContainer>
       <BackButton onClick={() => navigate('/')}>
@@ -236,7 +290,7 @@ export const History = () => {
       </BackButton>
       <Header>
         <Title>
-          <HistoryIcon size={28} color="#00f7ff" />
+          <HistoryIcon size={28} color="#3182f6" />
           과거 추천 기록
         </Title>
         {history.length > 0 && (
@@ -273,9 +327,14 @@ export const History = () => {
                   />
                 ))}
               </BallsRow>
-              <DeleteItemButton onClick={() => deleteItem(item.id)}>
-                <Trash2 size={18} />
-              </DeleteItemButton>
+              <CardActions>
+                <ShareItemButton onClick={() => shareItem(item)}>
+                  <Share2 size={18} />
+                </ShareItemButton>
+                <DeleteItemButton onClick={() => deleteItem(item.id)}>
+                  <Trash2 size={18} />
+                </DeleteItemButton>
+              </CardActions>
             </HistoryCard>
           ))}
         </AnimatePresence>

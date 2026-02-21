@@ -1,7 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
 import styled from '@emotion/styled';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RefreshCcw, History } from 'lucide-react';
+import { Sparkles, RefreshCcw, History, Share2, Download } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import { LottoBall } from '../../components/LottoBall';
 import { AIStatus } from '../../components/AIStatus';
 import { LottoMachine } from '../../components/LottoMachine';
@@ -9,15 +10,15 @@ import { predictNumbers } from '../../ml/inference';
 import { useNavigate } from 'react-router-dom';
 
 const ContentCard = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--card-bg);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
   border-radius: 32px;
   padding: 1.5rem 2rem;
   max-width: 800px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,7 +37,7 @@ const Title = styled.h1`
   font-weight: 800;
   margin-bottom: 0.2rem;
   letter-spacing: -2px;
-  background: linear-gradient(to bottom, #ffffff, rgba(255, 255, 255, 0.5));
+  background: var(--title-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   word-break: keep-all;
@@ -49,7 +50,7 @@ const Title = styled.h1`
 `;
 
 const Subtitle = styled.p`
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
   max-width: 500px;
@@ -108,9 +109,9 @@ const BallGrid = styled.div`
 `;
 
 const ActionButton = styled(motion.button)`
-  background: linear-gradient(135deg, #00f7ff 0%, #7000ff 100%);
+  background: var(--primary-btn);
   border: none;
-  color: #000;
+  color: var(--primary-btn-text);
   padding: 0.8rem 2.5rem;
   border-radius: 100px;
   font-size: 1rem;
@@ -120,7 +121,7 @@ const ActionButton = styled(motion.button)`
   align-items: center;
   gap: 0.5rem;
   margin: 0 auto;
-  box-shadow: 0 10px 20px rgba(0, 247, 255, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
   
   &:disabled {
@@ -148,13 +149,15 @@ const ButtonContainer = styled.div`
     margin-top: 1rem;
     gap: 0.75rem;
     width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 `;
 
 const ResetButton = styled.button`
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--btn-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -173,24 +176,23 @@ const ResetButton = styled.button`
   }
   
   &:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--text-main);
+    background: var(--btn-hover-bg);
+    border-color: var(--btn-hover-border);
     transform: translateY(-1px);
   }
 
   @media (max-width: 768px) {
-    padding: 0.65rem 1.25rem;
-    font-size: 0.9rem;
-    flex: 1;
-    min-width: 0;
+    padding: 0.65rem 0.5rem;
+    font-size: 0.85rem;
+    width: 100%;
   }
 `;
 
 const HistoryButton = styled.button`
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--btn-text);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -209,17 +211,16 @@ const HistoryButton = styled.button`
   }
   
   &:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--text-main);
+    background: var(--btn-hover-bg);
+    border-color: var(--btn-hover-border);
     transform: translateY(-1px);
   }
 
   @media (max-width: 768px) {
-    padding: 0.65rem 1.25rem;
-    font-size: 0.9rem;
-    flex: 1;
-    min-width: 0;
+    padding: 0.65rem 0.5rem;
+    font-size: 0.85rem;
+    width: 100%;
   }
 `;
 
@@ -232,6 +233,40 @@ export const Main = () => {
   const [extractedNumbers, setExtractedNumbers] = useState<number[]>([]);
   const [currentExtraction, setCurrentExtraction] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const captureRef = useRef<HTMLDivElement>(null);
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: '내 행운의 로또 번호',
+          text: `AI가 추천해준 행운의 로또 번호는 ${extractedNumbers.join(', ')} 입니다! 당신도 추천받아보세요 :)`,
+          url: window.location.href, // Or your actual domain
+        });
+      } else {
+        alert('공유하기 기능을 지원하지 않는 브라우저입니다. URL을 복사해주세요.');
+      }
+    } catch (err) {
+      console.log('Error sharing:', err);
+    }
+  };
+
+  const handleSaveImage = async () => {
+    if (!captureRef.current) return;
+    try {
+      const canvas = await html2canvas(captureRef.current, { backgroundColor: null, scale: 2 });
+      const image = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = image;
+      link.download = `lotto-ai-numbers-${new Date().getTime()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Failed to save image:', err);
+      alert('이미지 저장에 실패했습니다.');
+    }
+  };
 
   const generateNumbers = useCallback(async () => {
     setIsAnalyzing(true);
@@ -358,17 +393,19 @@ export const Main = () => {
               exit={{ opacity: 0 }}
               style={{ width: '100%', textAlign: 'center' }}
             >
-              <BallGrid>
-                {extractedNumbers.map((num, idx) => (
-                  <LottoBall key={`${num}-${idx}`} number={num} delay={0} />
-                ))}
-              </BallGrid>
+              <div ref={captureRef} style={{ padding: '20px 10px', borderRadius: '16px' }}>
+                <BallGrid>
+                  {extractedNumbers.map((num, idx) => (
+                    <LottoBall key={`${num}-${idx}`} number={num} delay={0} />
+                  ))}
+                </BallGrid>
+              </div>
               
               {!isAnalyzing && (
                 <>
                   {extractedNumbers.length === 0 ? (
                     <ActionButton
-                      whileHover={{ scale: 1.05, boxShadow: '0 15px 30px rgba(0, 247, 255, 0.4)' }}
+                      whileHover={{ scale: 1.05, boxShadow: '0 15px 30px rgba(0, 0, 0, 0.3)' }}
                       whileTap={{ scale: 0.98 }}
                       onClick={generateNumbers}
                     >
@@ -377,13 +414,21 @@ export const Main = () => {
                     </ActionButton>
                   ) : (
                     <ButtonContainer>
+                      <ResetButton onClick={handleSaveImage}>
+                        <Download size={16} />
+                        이미지 저장
+                      </ResetButton>
+                      <ResetButton onClick={handleShare}>
+                        <Share2 size={16} />
+                        공유하기
+                      </ResetButton>
                       <ResetButton onClick={generateNumbers}>
                         <RefreshCcw size={16} />
-                        다시 생성하기
+                        다시 생성
                       </ResetButton>
                       <HistoryButton onClick={() => navigate('/history')}>
                         <History size={16} />
-                        추첨기록 보기
+                        추첨기록
                       </HistoryButton>
                     </ButtonContainer>
                   )}

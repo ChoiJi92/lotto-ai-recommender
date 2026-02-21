@@ -26,7 +26,7 @@ const BackgroundGlow = styled.div`
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(112, 0, 255, 0.15) 0%, rgba(0, 247, 255, 0.05) 50%, transparent 70%);
+  background: radial-gradient(circle, var(--glow-color) 0%, rgba(0, 247, 255, 0.05) 50%, transparent 70%);
   pointer-events: none;
   z-index: -1;
 

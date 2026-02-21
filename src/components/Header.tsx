@@ -3,6 +3,8 @@ import styled from '@emotion/styled';
 import { Cpu, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../hooks/useTheme';
+import { Moon, Sun } from 'lucide-react';
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -32,14 +34,12 @@ const Logo = styled(Link)`
   font-weight: 800;
   font-size: 1.25rem;
   letter-spacing: -0.5px;
-  color: #ffffff;
+  color: var(--text-main);
   text-decoration: none;
   z-index: 51; 
   
   span {
-    background: linear-gradient(135deg, #00f7ff 0%, #7000ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-main);
   }
 
   @media (max-width: 768px) {
@@ -57,21 +57,21 @@ const DesktopNav = styled.nav`
   gap: 2rem;
   
   a {
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.95rem;
     font-weight: 600;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     transition: all 0.2s;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--btn-bg);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--btn-border);
     
     &:hover {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+      background: var(--btn-hover-bg);
+      border-color: var(--btn-hover-border);
       transform: translateY(-1px);
     }
   }
@@ -85,7 +85,7 @@ const MobileMenuButton = styled.button`
   display: none;
   background: none;
   border: none;
-  color: #fff;
+  color: var(--text-main);
   cursor: pointer;
   z-index: 51;
   padding: 0.5rem;
@@ -103,7 +103,7 @@ const MobileNavOverlay = styled(motion.div)`
   left: 0;
   width: 100%;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.95);
+  background: var(--menu-bg);
   backdrop-filter: blur(10px);
   z-index: 50;
   display: flex;
@@ -113,35 +113,71 @@ const MobileNavOverlay = styled(motion.div)`
   gap: 2rem;
 
   a {
-    color: #fff;
+    color: var(--text-main);
     font-size: 1.5rem;
     font-weight: 700;
     text-decoration: none;
     padding: 1rem 2rem;
     
     &:hover {
-        color: #00f7ff;
+        color: #3182f6;
     }
+  }
+`;
+
+const ThemeToggleButton = styled.button`
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  transition: transform 0.2s;
+  z-index: 51;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
+const MobileActions = styled.div`
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    display: flex;
   }
 `;
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <HeaderContainer>
       <Logo to="/">
-        <Cpu size={24} color="#00f7ff" />
+        <Cpu size={24} color="#3182f6" />
         AI <span>로또 추천</span>
       </Logo>
       
       <DesktopNav>
+        <ThemeToggleButton onClick={toggleTheme}>
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        </ThemeToggleButton>
         <Link to="/history">기록</Link>
       </DesktopNav>
 
-      <MobileMenuButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
-        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-      </MobileMenuButton>
+      <MobileActions>
+        <ThemeToggleButton onClick={toggleTheme}>
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        </ThemeToggleButton>
+        <MobileMenuButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </MobileMenuButton>
+      </MobileActions>
 
       <AnimatePresence>
         {isMenuOpen && (
