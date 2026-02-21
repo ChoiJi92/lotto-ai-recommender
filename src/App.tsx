@@ -14,10 +14,10 @@ const MainContainer = styled.main`
   flex-direction: column;
   align-items: center;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
-    padding: 4.5rem 1rem 1rem;
+    padding: 4.5rem 0.5rem 1rem;
     justify-content: flex-start; 
   }
 `;
