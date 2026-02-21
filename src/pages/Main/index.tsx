@@ -475,12 +475,35 @@ import { fetchWinningNumbers, getLatestDrawNo } from '../../utils/lottoApi';
 export const Main = () => {
   const navigate = useNavigate()
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [extractedNumbers, setExtractedNumbers] = useState<number[]>([]);
+  const [extractedNumbers, setExtractedNumbers] = useState<number[]>(() => {
+    const saved = sessionStorage.getItem('lastNumbers');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [currentExtraction, setCurrentExtraction] = useState<number | null>(null);
   const [strategy, setStrategy] = useState<RecommendStrategy>('balanced');
   const [dreamText, setDreamText] = useState('');
-  const [predictionData, setPredictionData] = useState<AIReportData | null>(null);
+  const [predictionData, setPredictionData] = useState<AIReportData | null>(() => {
+    const saved = sessionStorage.getItem('lastPrediction');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [winnerResult, setWinnerResult] = useState<{ drawNo: number; matchCount: number; numbers: number[] } | null>(null);
+
+  // Persistence: Save results to sessionStorage
+  useEffect(() => {
+    if (extractedNumbers.length === 6) {
+      sessionStorage.setItem('lastNumbers', JSON.stringify(extractedNumbers));
+    } else if (extractedNumbers.length === 0) {
+      sessionStorage.removeItem('lastNumbers');
+    }
+  }, [extractedNumbers]);
+
+  useEffect(() => {
+    if (predictionData) {
+      sessionStorage.setItem('lastPrediction', JSON.stringify(predictionData));
+    } else {
+      sessionStorage.removeItem('lastPrediction');
+    }
+  }, [predictionData]);
 
   // AI Weekly Feedback: 페이지 접속 시 최근 당첨 결과 대조
   useEffect(() => {
@@ -546,7 +569,16 @@ export const Main = () => {
     setExtractedNumbers([]);
     setPredictionData(null);
     setDreamText('');
+    sessionStorage.removeItem('lastNumbers');
+    sessionStorage.removeItem('lastPrediction');
   };
+
+  // Cleanup intervals on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
@@ -700,7 +732,7 @@ export const Main = () => {
         );
       }
     }, 1200);
-  }, []);
+  }, [strategy, dreamText]);
 
   return (
     <ContentCard
