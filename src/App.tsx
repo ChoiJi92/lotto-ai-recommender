@@ -1,8 +1,11 @@
 import styled from '@emotion/styled';
 import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 import { Routes, Route } from 'react-router-dom';
 import { Main } from './pages/Main';
 import { History } from './pages/History';
+import { Terms } from './pages/Terms';
+import { Privacy } from './pages/Privacy';
 
 const MainContainer = styled.main`
   min-height: 100vh;
@@ -11,10 +14,10 @@ const MainContainer = styled.main`
   flex-direction: column;
   align-items: center;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
-    padding: 4.5rem 1rem 1rem;
+    padding: 4.5rem 0.5rem 1rem;
     justify-content: flex-start; 
   }
 `;
@@ -45,7 +48,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/history" element={<History />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
       </Routes>
+      <Footer />
     </MainContainer>
   );
 }

@@ -1,14 +1,14 @@
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 
-const BallContainer = styled(motion.div)<{ colorIndex: number }>`
-  width: 60px;
-  height: 60px;
+const BallContainer = styled(motion.div)<{ colorIndex: number; size?: 'small' | 'normal' }>`
+  width: ${props => props.size === 'small' ? '30px' : '60px'};
+  height: ${props => props.size === 'small' ? '30px' : '60px'};
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: ${props => props.size === 'small' ? '0.8rem' : '1.5rem'};
   font-weight: 800;
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -41,9 +41,10 @@ const BallContainer = styled(motion.div)<{ colorIndex: number }>`
 interface LottoBallProps {
   number: number;
   delay?: number;
+  size?: 'small' | 'normal';
 }
 
-export const LottoBall = ({ number, delay = 0 }: LottoBallProps) => {
+export const LottoBall = ({ number, delay = 0, size = 'normal' }: LottoBallProps) => {
   const getColorIndex = (num: number) => {
     if (num <= 10) return 0;
     if (num <= 20) return 1;
@@ -54,6 +55,7 @@ export const LottoBall = ({ number, delay = 0 }: LottoBallProps) => {
 
   return (
     <BallContainer
+      size={size}
       colorIndex={getColorIndex(number)}
       initial={{ scale: 0, y: 50, opacity: 0, rotate: 0 }}
       animate={{ scale: 1, y: 0, opacity: 1, rotate: 0 }}

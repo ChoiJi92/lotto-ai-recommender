@@ -15,4 +15,8 @@ export interface PredictionResult {
   probabilities: number[];
   rfProbabilities: number[];
   xgbProbabilities: number[];
+  hotNumbers: number[]; // Numbers marked as 'hot' by recent frequency
+  coldNumbers: number[]; // Numbers marked as 'cold' by recent frequency
+  strategy?: 'balanced' | 'stable' | 'challenge';
+  drawNo?: number;
 }
