@@ -32,13 +32,9 @@ const ContentCard = styled(motion.div)`
   align-items: center;
 
   @media (max-width: 768px) {
-    padding: 1rem 0.5rem;
+    padding: 1.5rem 1rem;
     border-radius: 20px;
-    height: 100%;
-    max-height: 90vh; /* Allow a bit more area */
-    overflow-y: auto; /* Enable scrolling if content is too long on mobile */
-    overscroll-behavior: contain;
-    justify-content: flex-start; /* Stop centering when scrolling is active */
+    width: 100%;
   }
 `;
 
