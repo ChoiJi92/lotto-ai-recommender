@@ -476,15 +476,25 @@ export const Main = () => {
   const navigate = useNavigate()
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [extractedNumbers, setExtractedNumbers] = useState<number[]>(() => {
-    const saved = sessionStorage.getItem('lastNumbers');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = sessionStorage.getItem('lastNumbers');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Failed to parse lastNumbers from sessionStorage', e);
+      return [];
+    }
   });
   const [currentExtraction, setCurrentExtraction] = useState<number | null>(null);
   const [strategy, setStrategy] = useState<RecommendStrategy>('balanced');
   const [dreamText, setDreamText] = useState('');
   const [predictionData, setPredictionData] = useState<AIReportData | null>(() => {
-    const saved = sessionStorage.getItem('lastPrediction');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = sessionStorage.getItem('lastPrediction');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.error('Failed to parse lastPrediction from sessionStorage', e);
+      return null;
+    }
   });
   const [winnerResult, setWinnerResult] = useState<{ drawNo: number; matchCount: number; numbers: number[] } | null>(null);
 
@@ -508,25 +518,34 @@ export const Main = () => {
   // AI Weekly Feedback: 페이지 접속 시 최근 당첨 결과 대조
   useEffect(() => {
     const checkResults = async () => {
-      const historyStr = localStorage.getItem('lottoHistory');
-      if (!historyStr) return;
+      try {
+        const historyStr = localStorage.getItem('lottoHistory');
+        if (!historyStr) return;
 
-      const history = JSON.parse(historyStr);
-      const latestDrawNo = getLatestDrawNo();
-      const lastChecked = localStorage.getItem('lastCheckedDraw');
+        const history = JSON.parse(historyStr);
+        if (!Array.isArray(history)) return;
 
-      // 이미 확인한 회차라면 패스
-      if (lastChecked === latestDrawNo.toString()) return;
+        const latestDrawNo = getLatestDrawNo();
+        const lastChecked = localStorage.getItem('lastCheckedDraw');
 
-      // 실제 최신 당첨 번호 가져오기
-      const realResult = await fetchWinningNumbers(latestDrawNo);
-      if (!realResult) {
-        // 아직 이번 주 결과가 안 나왔을 수 있으므로 이전 회차 확인 시도
-        const prevResult = await fetchWinningNumbers(latestDrawNo - 1);
-        if (!prevResult || lastChecked === prevResult.drawNo.toString()) return;
-        checkMatch(prevResult, history);
-      } else {
-        checkMatch(realResult, history);
+        // 실제 최신 당첨 번호 가져오기
+        const realResult = await fetchWinningNumbers(latestDrawNo);
+        
+        if (realResult) {
+          // 이미 확인한 회차라면 패스
+          if (lastChecked === realResult.drawNo.toString()) return;
+          
+          checkMatch(realResult, history);
+        } else {
+          // 최신 회차 실패 시 이전 회차 시도
+          const prevDrawNo = latestDrawNo - 1;
+          const prevResult = await fetchWinningNumbers(prevDrawNo);
+          if (prevResult && lastChecked !== prevResult.drawNo.toString()) {
+            checkMatch(prevResult, history);
+          }
+        }
+      } catch (error) {
+        console.error('Error during checkResults:', error);
       }
     };
 
